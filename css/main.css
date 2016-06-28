@@ -1,0 +1,102 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.h1, h1 {
+    font-size: 36px;
+    text-align: center !important;
+}
+
+#formulario {
+
+  display: none;
+
+
+}
+
+#login-status{
+
+  display: none;
+
+}
+
+#avatar{
+
+  margin: 0 0 0 25% !important;
+
+}
+
+@media (max-width: 800px) {
+  #avatar{
+    display: none;
+  }
+  #basemap_panel{
+	    position: absolute;
+		right: 16px;
+		/* width: 112px; */
+	}
+  .img-rounded{
+
+  width: 180px !important;
+  height: 150px !important;
+
+}
+}
+
+#polcia, #mantenimiento {
+
+  display: none;
+
+}
+#estado_query{
+
+	/*-display: none;*/
+
+}
+
+#galleryNode_basemap_1, #galleryNode_basemap_2,
+#galleryNode_basemap_3, #galleryNode_basemap_4,
+#galleryNode_basemap_6, #galleryNode_basemap_0,
+#galleryNode_basemap_5, #galleryNode_basemap_9 {
+
+	display: none;
+}
+
+#mapa, #mantenimiento, #policia, #oitr{
+	display:none;
+}
+
+
+
+#basemap_panel{
+
+	position: absolute;
+    right: 16px;
+	z-Index:999;
+    /*width: 112px;*/
+
+}
+
+.esriBasemapGalleryLabelContainer{
+
+	display: none !important;
+}
+
+#preview{
+
+  display: none;
+
+}
+
+.img-rounded{
+
+  width: 360px;
+  height: 300px;
+
+}
+/*.container{
+	border-style: outset;
+}*/

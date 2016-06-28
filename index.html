@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Rivas Vaciamadrid</title>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <!-- Latest compiled JavaScript -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.0/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.0/"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/app.js"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+    var state = true;
+    function hideShow(){
+    	if(!state){
+    		$("#imagenAttach").show();
+    		state = true;
+    	}
+    	else {
+    		$("#imagenAttach").hide();
+    		state = false;
+    	}
+    }
+    function previewer(){
+    	var preview = document.getElementById("preview");
+    	var file = document.querySelector('input[type=file]').files[0];
+    	var reader = new FileReader();
+    	reader.onloadend = function(){
+    		preview.src = reader.result;
+    		$('#preview').show();
+    	}
+    	if(file){
+    		reader.readAsDataURL(file);
+    	}else{
+    		preview.src = "";
+    	}
+    }
+    </script>
+    <style>
+    #viewDiv{
+      width: 100%;
+      height: 400px;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    	<div class="col-md-12 col-lg-12 col-lg-offset">
+    		<div class="row panel-heading">
+    			<div class="col-sm-12" style="text-align:center;" id = "logo" >
+    				<img class="img-responsive" src="img/banner.jpg" width="100%" height="100%"></img>
+    			</div>
+    			<div class="col-sm-3" style="text-align:center; margin-top: 30px;" id="login-status">
+    				<label class="control-label">Bienvenido <span id="userId" class="bold"></span></label>
+    				<img id = "avatar" class = "img-responsive" width="102" height="86" style="margin: 0 0 0 0;">
+    				<!-- <button id="logout" class="btn btn-danger" style="align: center;">Salir</button> -->
+    				<div class="btn-group btn-group-justified">
+    				  <a href="#" id="dashboard" class="btn btn-success">Dashboard</a>
+    				  <a href="#" id="logout" class="btn btn-danger">Salir</a>
+    				</div>
+            <div class="btn-group btn-group-justified">
+              <a href="#" id="detalles" class="btn btn-primary">Mostrar Detalles</a>
+    				</div>
+    			</div>
+    		</div>
+    		<div id = "acceso" style="vertical-align:center;">
+    			<h2 style="text-align:center">Bienvenido al Sistema de Reporte y Actualizacion de Incidencias </br> del Ayuntamiento de Rivas Vaciamadrid</h2>
+    			<button id="login" class="btn btn-success btn-lg btn-block">Entrar</button>
+    		</div>
+    		<div id = "formulario">
+        </div>
+        <div id="dashboard_panel">
+        </div>
+        <div id="mapa">
+          <label for="comment">Ubicacion de la Insidencia:</label>
+          <div id="viewDiv" class="gf-map panel panel-default">
+            <div id="basemap_panel">
+              <div id="basemapGallery"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="mantenimiento">
+          <div class="col-sm-12">
+            <button id="subsanado" class="btn-lg btn-primary btn-block">Subsanado</button>
+          </div>
+        </div>
+        <div class="form-group" id="policia">
+          <div class="col-sm-12">
+            <div class="btn-group btn-group-justified">
+              <a href="#" id="procede" class="btn btn-lg btn-success">Procede</a>
+              <a href="#" id="no_procede" class="btn btn-lg btn-danger">No Procede</a>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="oitr">
+          <div class="col-sm-12">
+            <button id="finalizado" class="btn-lg btn-primary btn-block">Finalizado</button>
+          </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+    	<div class="modal-dialog">
+    	<!-- Modal content-->
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<button type="button" class="close" data-dismiss="modal">&times;</button>
+    				<h4 class="modal-title">Actualizando</h4>
+    			</div>
+    			<div class="modal-body">
+    				Actualizando Datos...
+    				<div class="progress">
+    					<div class="progress-bar progress-bar-striped active" role="progressbar"
+    					aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+    </body>
+    <div class="clearfix"></div>
+    <hr />
+    <footer>
+    		<div class="panel-body text-center">
+    			<p>Powered by <a href="http://www.esri.es" target="_blank">ESRI España</a> 2016</p>
+    		</div>
+    </footer>
+</html>
