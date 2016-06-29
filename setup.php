@@ -34,6 +34,7 @@
 			CURLOPT_MAXREDIRS => 10,
 			CURLOPT_TIMEOUT => 30,
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_CUSTOMREQUEST => "POST",
 			CURLOPT_POSTFIELDS => "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"f\"\r\n\r\njson\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n{$username}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n{$pass}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"referer\"\r\n\r\narcgis.com\r\n-----011000010111000001101001--",
 			CURLOPT_HTTPHEADER => array(
@@ -71,6 +72,7 @@
           CURLOPT_MAXREDIRS => 10,
           CURLOPT_TIMEOUT => 30,
           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_SSL_VERIFYPEER => false,
           CURLOPT_CUSTOMREQUEST => "GET",
           CURLOPT_HTTPHEADER => array(
             "cache-control: no-cache",
