@@ -260,6 +260,23 @@ xhr.open("POST", urlTest+featureArray);
 xhr.send(data);
 });
 //==============================================================================//
+$('#no_procede').click(function () {
+feature.attributes.ESTADO = "INICIADO";
+var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+var data = null;
+var xhr = new XMLHttpRequest();
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === 4) {
+    console.log(this.responseText);
+    document.location = "./"
+
+  }
+});
+xhr.open("POST", urlTest+featureArray);
+xhr.send(data);
+});
+//==============================================================================//
       }
      });
   });
