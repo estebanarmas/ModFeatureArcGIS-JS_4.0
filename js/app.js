@@ -190,7 +190,7 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
         view.goTo(feature.geometry);//result.features[0].geometry);
       }
 //==============================================================================//
-  $('#subsanado').click(function () {
+  $('#sube_imagen').click(function () {
   var output = document.getElementById("output");
   var data = new FormData(document.getElementById("fileinfo"));
 
@@ -209,7 +209,7 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
   }*/
   });
 //==============================================================================//
-  $('#procede').click(function () {
+  $('#subsanado').click(function () {
   feature.attributes.ESTADO = "SUBSANADO";
   var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
   var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
@@ -218,11 +218,47 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
   xhr.addEventListener("readystatechange", function () {
     if (this.readyState === 4) {
       console.log(this.responseText);
+      document.location = "./"
+
     }
   });
   xhr.open("POST", urlTest+featureArray);
   xhr.send(data);
   });
+//==============================================================================//
+  $('#procede').click(function () {
+  feature.attributes.ESTADO = "PENDIENTE OIT";
+  var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+  var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+  var data = null;
+  var xhr = new XMLHttpRequest();
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === 4) {
+      console.log(this.responseText);
+      document.location = "./"
+
+    }
+  });
+  xhr.open("POST", urlTest+featureArray);
+  xhr.send(data);
+  });
+//==============================================================================//
+$('#finalizado').click(function () {
+feature.attributes.ESTADO = "FINALIZADO";
+var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+var data = null;
+var xhr = new XMLHttpRequest();
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === 4) {
+    console.log(this.responseText);
+    document.location = "./"
+
+  }
+});
+xhr.open("POST", urlTest+featureArray);
+xhr.send(data);
+});
 //==============================================================================//
       }
      });
