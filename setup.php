@@ -160,7 +160,7 @@
     			<h3 style="text-align:center">
     				Formulario de Instalación
     			</h3>
-    			<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" role ="form">
+    			<form method="post" action="" role ="form">
             <div class="form-group">
       				<label for="usr">Nombre de Usuario de ArcGIS Online:</label>
       				<input type="text" name="name" placeholder="Nombre de Usuario" value="<?php echo $name;?>" class="form-control">
