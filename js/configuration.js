@@ -236,7 +236,7 @@ function seleccionGrupo() {
     for(var i in valores){
       var divCampo = document.createElement("DIV");
         divCampo.setAttribute("class","form-group col-sm-12");
-        divCampo.setAttribute("id",valores[i]);
+        //divCampo.setAttribute("id",valores[i]);
       var labelCampo = document.createElement("LABEL");
         labelCampo.setAttribute("class", "control-label col-sm-12");
         labelCampo.innerHTML = valores[i];//result.fields[i].alias

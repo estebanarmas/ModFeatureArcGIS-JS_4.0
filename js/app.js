@@ -186,87 +186,173 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
         view.goTo(feature.geometry);//result.features[0].geometry);
       }
 //==============================================================================//
-  $('#sube_imagen').click(function () {
+  function subir_Imagen () {
   var output = document.getElementById("output");
   var data = new FormData(document.getElementById("fileinfo"));
-
   data.append("f", "pjson");
   data.append("token", esriId.credentials[0].token);
-  console.log(data);
-  console.log($("#fileinfo"));/*
   var xhr = new XMLHttpRequest();
   xhr.open("POST", visibleLayer.url+"/"+visibleLayer.layerId+"/"+url.query.id+"/addAttachment", false)
   xhr.send(data);
   if (xhr.status == 200) {
-    //output.innerHTML += "Uploaded!<br />";
     console.log("Exito");
+    return true;
   } else {
     output.innerHTML += "Error " + xhr.status + " occurred uploading your file.<br />";
-  }*/
-  });
+    return false;
+  }
+  };
 //==============================================================================//
   $('#subsanado').click(function () {
-  feature.attributes.ESTADO = "SUBSANADO";
-  var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
-  var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
-  var data = null;
-  var xhr = new XMLHttpRequest();
-  xhr.addEventListener("readystatechange", function () {
-    if (this.readyState === 4) {
-      console.log(this.responseText);
-      document.location = "./"
+    if($("#fileinfoField").val() != ""){
+      if(subir_Imagen()){
+        feature.attributes.ESTADO = "SUBSANADO";
+        var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+        var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+        var data = null;
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === 4) {
+            console.log(this.responseText);
+            document.location = "./"
+          }
+        });
+        xhr.open("POST", urlTest+featureArray);
+        xhr.send(data);
+      }
+      else{
+        alert("No se ha podido subir la imagen");
+      }
     }
-  });
-  xhr.open("POST", urlTest+featureArray);
-  xhr.send(data);
+    else{
+      feature.attributes.ESTADO = "SUBSANADO";
+      var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+      var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+      var data = null;
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+          console.log(this.responseText);
+          document.location = "./"
+        }
+      });
+      xhr.open("POST", urlTest+featureArray);
+      xhr.send(data);
+    }
   });
 //==============================================================================//
   $('#procede').click(function () {
-  feature.attributes.ESTADO = "PENDIENTE OIT";
-  var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
-  var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
-  var data = null;
-  var xhr = new XMLHttpRequest();
-  xhr.addEventListener("readystatechange", function () {
-    if (this.readyState === 4) {
-      console.log(this.responseText);
-      document.location = "./"
+    if($("#fileinfoField").val() != ""){
+      if(subir_Imagen()){
+        feature.attributes.ESTADO = "PENDIENTE OIT";
+        var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+        var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+        var data = null;
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === 4) {
+            console.log(this.responseText);
+            document.location = "./"
+          }
+        });
+        xhr.open("POST", urlTest+featureArray);
+        xhr.send(data);
+      }
+      else{
+        alert("No se ha podido subir la imagen");
+      }
     }
-  });
-  xhr.open("POST", urlTest+featureArray);
-  xhr.send(data);
+    else{
+      feature.attributes.ESTADO = "PENDIENTE OIT";
+      var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+      var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+      var data = null;
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+          console.log(this.responseText);
+          document.location = "./"
+        }
+      });
+      xhr.open("POST", urlTest+featureArray);
+      xhr.send(data);
+    }
   });
 //==============================================================================//
 $('#finalizado').click(function () {
-feature.attributes.ESTADO = "FINALIZADO";
-var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
-var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
-var data = null;
-var xhr = new XMLHttpRequest();
-xhr.addEventListener("readystatechange", function () {
-  if (this.readyState === 4) {
-    console.log(this.responseText);
-    document.location = "./"
+  if($("#fileinfoField").val() != ""){
+    if(subir_Imagen()){
+      feature.attributes.ESTADO = "FINALIZADO";
+      var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+      var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+      var data = null;
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+          console.log(this.responseText);
+          document.location = "./"
+        }
+      });
+      xhr.open("POST", urlTest+featureArray);
+      xhr.send(data);
+    }
+    else{
+      alert("No se ha podido subir la imagen");
+    }
   }
-});
-xhr.open("POST", urlTest+featureArray);
-xhr.send(data);
+  else{
+    feature.attributes.ESTADO = "FINALIZADO";
+    var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+    var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+    var data = null;
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        console.log(this.responseText);
+        document.location = "./"
+      }
+    });
+    xhr.open("POST", urlTest+featureArray);
+    xhr.send(data);
+  }
 });
 //==============================================================================//
 $('#no_procede').click(function () {
-feature.attributes.ESTADO = "INICIADO";
-var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
-var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
-var data = null;
-var xhr = new XMLHttpRequest();
-xhr.addEventListener("readystatechange", function () {
-  if (this.readyState === 4) {
-    console.log(this.responseText);
-    document.location = "./"
+  if($("#fileinfoField").val() != ""){
+    if(subir_Imagen()){
+      feature.attributes.ESTADO = "INICIADO";
+      var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+      var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+      var data = null;
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+          console.log(this.responseText);
+          document.location = "./"
+        }
+      });
+      xhr.open("POST", urlTest+featureArray);
+      xhr.send(data);
+    }
+    else{
+      alert("No se ha podido subir la imagen");
+    }
   }
-});
-xhr.open("POST", urlTest+featureArray);
-xhr.send(data);
+  else{
+    feature.attributes.ESTADO = "INICIADO";
+    var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+    var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+    var data = null;
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        console.log(this.responseText);
+        document.location = "./"
+      }
+    });
+    xhr.open("POST", urlTest+featureArray);
+    xhr.send(data);
+  }
 });
 //==============================================================================//
       }
@@ -535,6 +621,7 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
       inputImagen.setAttribute("type","file");
       inputImagen.setAttribute("type","file");
       inputImagen.setAttribute("name","file");
+      inputImagen.setAttribute("id","fileinfoField");
       inputImagen.setAttribute("class","form-control");
       inputImagen.required = true;
     divInput.appendChild(inputImagen);
