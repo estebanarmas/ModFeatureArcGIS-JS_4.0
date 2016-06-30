@@ -88,7 +88,7 @@
         if ($err) {
           echo "cURL Error #:" . $err;
         } else {
-          $elementos = ['webmapid' => $webmap, 'clientid' => $clienid, 'featureservices' => true];
+          $elementos = ['webmapid' => $webmap, 'clientid' => $clienid, 'token' => $token, 'featureservices' => true];
           $array_json = json_decode($response,true);
           array_push($array_json,$elementos);
           $myfile = fopen("js/webmap.json", "w") or die("Unable to open file!");
@@ -127,7 +127,7 @@
         if ($err) {
           echo "cURL Error #:" . $err;
         } else {
-          $elementos = ['webmapid' => $webmap, 'clientid' => $clienid];
+          $elementos = ['webmapid' => $webmap, 'clientid' => $clienid, 'token' => $token];
           $array_json = json_decode($response,true);
           array_push($array_json,$elementos);
           $myfile = fopen("js/webmap.json", "w") or die("Unable to open file!");
@@ -137,11 +137,6 @@
         }
       }
     }
-
-    function create_configuration_file(){
-      echo "hola";
-    }
-
 		if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			if (empty($_POST["name"]) || empty($_POST["password"]) || empty($_POST["webmap"]) || empty($_POST["clientid"])) {
 				echo "Ingrese todos los parametros por favor";

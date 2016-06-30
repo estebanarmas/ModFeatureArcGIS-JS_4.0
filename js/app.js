@@ -17,13 +17,14 @@ require([
   "esri/layers/FeatureLayer",
   "esri/tasks/QueryTask",
   "esri/symbols/PictureMarkerSymbol",
+  "esri/symbols/SimpleLineSymbol",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
   "esri/tasks/support/Query",
   "esri/views/MapView",
   "esri/WebMap",
   "dojo/promise/all",
-  "dojo/domReady!"],function(OAuthInfo, esriId, Portal, PortalQueryParams,PortalQueryResult, urlUtils, Collection, FeatureLayer, QueryTask, PictureMarkerSymbol, GraphicsLayer, Graphic, Query, MapView, WebMap, all){
+  "dojo/domReady!"],function(OAuthInfo, esriId, Portal, PortalQueryParams,PortalQueryResult, urlUtils, Collection, FeatureLayer, QueryTask, PictureMarkerSymbol, SimpleLineSymbol, GraphicsLayer, Graphic, Query, MapView, WebMap, all){
 
   var info = new OAuthInfo({
     appId: configuracionInicial.clientid,
@@ -94,7 +95,6 @@ require([
 
   $('#dashboard').click(function(){
     document.location = "./";
-    console.log("hola");
   });
 
   $('#detalles').click(function (){
@@ -122,7 +122,6 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
     //}
   }
   var visibleLayer = webmap.findLayerById(configuracionInicial[String(url.query.capa)]);
-
   var fl = new FeatureLayer({
     url: visibleLayer.url+"/"+visibleLayer.layerId,
     popupTemplate: visibleLayer.popupTemplate,
@@ -142,14 +141,12 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
         var feature = result.features[0];
         var imagenesURL = [];
         var simbolo;
-
         if(fl.renderer.type == "simple"){
           simbolo = fl.renderer.symbol;
         }
         if(fl.renderer.type == "uniqueValue"){
           simbolo = fl.renderer.getUniqueValueInfo(feature).symbol;
         }
-
         var featureVisible = new Graphic({
           geometry: feature.geometry,
           symbol: simbolo
@@ -177,7 +174,6 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
             console.log(imagenesURL);
           }
         }
-
 //===============Creacion de formulario para edicion de feature================//
   loadFormHTML(result,feature, imagenesURL, configuracionInicial[String(url.query.capa)]);
 //==============================================================================//
@@ -219,7 +215,6 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
     if (this.readyState === 4) {
       console.log(this.responseText);
       document.location = "./"
-
     }
   });
   xhr.open("POST", urlTest+featureArray);
@@ -236,7 +231,6 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
     if (this.readyState === 4) {
       console.log(this.responseText);
       document.location = "./"
-
     }
   });
   xhr.open("POST", urlTest+featureArray);
@@ -253,7 +247,6 @@ xhr.addEventListener("readystatechange", function () {
   if (this.readyState === 4) {
     console.log(this.responseText);
     document.location = "./"
-
   }
 });
 xhr.open("POST", urlTest+featureArray);
@@ -270,7 +263,6 @@ xhr.addEventListener("readystatechange", function () {
   if (this.readyState === 4) {
     console.log(this.responseText);
     document.location = "./"
-
   }
 });
 xhr.open("POST", urlTest+featureArray);
@@ -284,11 +276,66 @@ xhr.send(data);
 
 //==============================================================================//
 //==============================================================================//
+function mostrarCapas(webmap, resultados, view){
+  if(resultados.geometryType == "point"){
+    var featureVisible = [];
+    var simboloPoint = new PictureMarkerSymbol({"url":"http://static.arcgis.com/images/Symbols/Shapes/RedPin1LargeB.png", "contentType":"image/png","width":34,"height":34 });
+    for(var o in resultados.features){
+      featureVisible.push(new Graphic({
+        geometry: resultados.features[o].geometry,
+        symbol: simboloPoint
+      }));
+    }
+    var capaVisible = new GraphicsLayer({
+      graphics: featureVisible
+    });
+    view.goTo(featureVisible);
+    webmap.add(capaVisible);
+  }
+  if(resultados.geometryType == "polyline"){
+    var featureVisible = [];
+    var simboloLine = new SimpleLineSymbol({
+        color: [226, 119, 40],
+        width: 4
+      });
+    for(var o in resultados.features){
+      featureVisible.push(new Graphic({
+        geometry: resultados.features[o].geometry,
+        symbol: simboloLine
+      }));
+    }
+    var capaVisible = new GraphicsLayer({
+      graphics: featureVisible
+    });
+    webmap.add(capaVisible);
+  }
+  if(resultados.geometryType == "polygon"){
+    var featureVisible = [];
+    var simboloPolygon = new SimpleFillSymbol({
+        color: [227, 139, 79, 0.8],
+        outline: { // autocasts as new SimpleLineSymbol()
+          color: [255, 255, 255],
+          width: 1
+        }
+      });
+    for(var o in resultados.features){
+      featureVisible.push(new Graphic({
+        geometry: resultados.features[o].geometry,
+        symbol: simboloPolygon
+      }));
+    }
+    var capaVisible = new GraphicsLayer({
+      graphics: featureVisible
+    });
+    webmap.add(capaVisible);
+  }
+}
 function generarConsulta(capaId, grupo){
   var consultaCapa = "";
   var query = new Query();
   query.outFields = ["*"];
   query.returnGeometry = true;
+  query.outSpatialReference = { wkid: 102100 };
   for(var j in configuracionInicial[capaId][0]){
     var campo = String(configuracionInicial[capaId][0][j].name);
     var consultaCampo = "";
@@ -351,7 +398,9 @@ function generarTablas(features, grupoFeat, item){
 //==============================================================================//
 //==============================================================================//
 function dashboardFeatures(webmap, view, tokenUser, grupo){
-  console.log(grupo);
+  for(var l = 0; l < webmap.layers.items.length; l++){
+      webmap.layers.items[l].visible = false;
+  }
   var urls=[]
   var tareas = []
   for(var x in configuracionInicial.operationalLayers){
@@ -374,10 +423,12 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
       for(var j in resultados){
         if(resultados[j].features.length > 0){
           generarTablas(resultados[j],urls[j].id, urls[j].itemId);//, j
+          mostrarCapas(webmap,resultados[j],view);
         }
       }
     }
   });
+  console.log(webmap);
  loadHTML("dashboard", grupo);
 }
 //==============================================================================//
@@ -428,7 +479,6 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
       }
   	}
   }
-
   function loadFormHTML(result,feature, imagenesURL, capa){
     var divRow = document.createElement("DIV");
     divRow.setAttribute("class", "row");
@@ -523,7 +573,7 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
     divCol.appendChild(formImagen);
     divRow.appendChild(divCol);
     document.getElementById("formulario").appendChild(divRow);
-  }
+}
 //==============================================================================//
 }).fail(function(error) {
   console.log(error);

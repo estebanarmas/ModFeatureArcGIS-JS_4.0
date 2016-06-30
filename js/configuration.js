@@ -1,6 +1,7 @@
 'use strict';
 $.getJSON( "js/webmap.json").done(function(data){
   var detalles = JSON.parse(data);
+  console.log(detalles);
   if(detalles[0].featureservices != undefined){
     console.log("FeatureServices");
     if(detalles.fields != undefined && detalles.fields.length > 0 ){
@@ -129,7 +130,12 @@ $.getJSON( "js/webmap.json").done(function(data){
             else{
               var arrayEstados = estados.split(',');
               if(arrayEstados.length > 0){
-                json_capas[opt.text] = {"estados":arrayEstados};
+                for(var y in json_capas["operationalLayers"]){
+
+                  json_capas[opt.text] = {"estados":arrayEstados,
+                                          [json_capas["operationalLayers"][y].id]:{"prueba":"json"}
+                                          };
+                }
                 verificacion = true;
               }
               else {
@@ -208,6 +214,8 @@ $.getJSON( "js/webmap.json").done(function(data){
   }
 });
 function seleccionGrupo() {
+  $.getJSON( "js/webmap.json").done(function(data){
+    var detalles = JSON.parse(data);
   var valores = [];
   var selector = document.getElementById("selectorGrupos");
   for (var j=0, iLen=selector.length; j<iLen; j++){
@@ -227,23 +235,79 @@ function seleccionGrupo() {
     divEstados.setAttribute("id","vincular_estados");
     for(var i in valores){
       var divCampo = document.createElement("DIV");
-      divCampo.setAttribute("class","form-group");
+        divCampo.setAttribute("class","form-group col-sm-12");
+        divCampo.setAttribute("id",valores[i]);
       var labelCampo = document.createElement("LABEL");
-      labelCampo.setAttribute("class", "control-label col-sm-12");
-      labelCampo.innerHTML = valores[i];//result.fields[i].alias
+        labelCampo.setAttribute("class", "control-label col-sm-12");
+        labelCampo.innerHTML = valores[i];//result.fields[i].alias
+        labelCampo.setAttribute("onclick","showHide()");
       var divText = document.createElement("DIV");
       divText.setAttribute("class","col-sm-12");
+      //Aqui va el bucle de cada capa
+      /*
+      var rol = valores[i];
+      for(var z in detalles.operationalLayers){
+      if(detalles.operationalLayers[z].popupInfo != undefined){
+          var divPanelCheckBox = document.createElement("DIV");
+          divPanelCheckBox.setAttribute("class","panel-body col-sm-12");
+          var labelPanelCheckBox = document.createElement("LABEL");
+          labelPanelCheckBox.setAttribute("class", "control-label col-sm-12");
+          labelPanelCheckBox.innerHTML = detalles.operationalLayers[z].id;
+          //divPanelCheckBox.appendChild(labelPanelCheckBox);
+          var selector = document.getElementById("selector_"+detalles.operationalLayers[z].id);
+          var groupCheckBox = document.createElement("DIV");
+          groupCheckBox.setAttribute("class","form-group");
+            var divGroupCheck = document.createElement("DIV");
+            divGroupCheck.setAttribute("class","col-sm-offset-2 col-sm-10");
+                    var divSubPanelCheckBox1 = document.createElement("DIV");
+                    divSubPanelCheckBox1.setAttribute("class","panel-body col-sm-6");
+                    var divSubPanelCheckBox2 = document.createElement("DIV");
+                    divSubPanelCheckBox2.setAttribute("class","panel-body col-sm-6");
+          for (var j=0, iLen=selector.length; j<iLen; j++){
+            var opt = selector.options[j];
+            if (opt.selected){
+              var divCheckBox = document.createElement("DIV");
+              divCheckBox.setAttribute("class","checkbox");
+              var labelCheckBox = document.createElement("LABEL");
+              var checkboxField = document.createElement("INPUT");
+              checkboxField.setAttribute("type", "checkbox");
+              checkboxField.setAttribute("value",opt.value);
+              checkboxField.setAttribute("id",detalles.operationalLayers[z].id+"_"+opt.value+"_"+rol);
+              checkboxField.setAttribute("class","checkbox");
+              labelCheckBox.innerHTML = opt.text;
+              labelCheckBox.appendChild(checkboxField);
+              divCheckBox.appendChild(labelCheckBox);
+              divSubPanelCheckBox1.appendChild(divCheckBox);//divPanelCheckBox
+            }
+          }
+
+          var filterButton = document.createElement("BUTTON");
+          filterButton.setAttribute("class","btn btn-info");
+          filterButton.setAttribute("id","boton_"+valores[i]);
+          filterButton.innerHTML =  "Filtros";
+          filterButton.setAttribute("type","button");
+          divSubPanelCheckBox2.appendChild(filterButton);
+
+
+          divPanelCheckBox.appendChild(divSubPanelCheckBox1);
+          divPanelCheckBox.appendChild(divSubPanelCheckBox2);
+
+
+          divCampo.appendChild(labelPanelCheckBox);
+          divCampo.appendChild(divPanelCheckBox);
+        }
+      }*///Final de bucle de capas
       var textField = document.createElement("INPUT");
       textField.setAttribute("type", "text");
       textField.setAttribute("class","form-control");
       textField.setAttribute("id",valores[i]);//result.fields
       textField.setAttribute("placeholder","Ej: Estado 1,Estado 2...etc - Separar cada estado por una coma sin espacio");
-      divText.appendChild(labelCampo);
-      divText.appendChild(textField);
+      divText.appendChild(textField);//textField
       divCampo.appendChild(divText);
+      divEstados.appendChild(labelCampo);
       divEstados.appendChild(divCampo);
     }
     document.getElementById("datos_webmap").appendChild(divEstados);
-
   }
+});
 };
