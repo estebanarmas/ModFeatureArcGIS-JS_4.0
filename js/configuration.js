@@ -1,4 +1,5 @@
 'use strict';
+var filtroGlobal = "Test";
 $.getJSON( "js/webmap.json").done(function(data){
   var detalles = JSON.parse(data);
   console.log(detalles);
@@ -75,10 +76,48 @@ $.getJSON( "js/webmap.json").done(function(data){
   divRow.appendChild(boton);
   document.getElementById("form_principal").appendChild(divClearFix);
   document.getElementById("form_principal").appendChild(divRow);
-
+//==//==//==//==//==//==//==//==//==//==//==//==
+/*$('#enviar2').click(function(){
+    var capas = [];
+    var roles = [];
+    for(var j=0; j<document.getElementById("selectorGrupos").length; j++){//ROL
+      var selector = document.getElementById("selectorGrupos");
+      if (selector.options[j].selected) {
+        roles.push(selector.options[j].text);
+      }
+    }
+    for(var i in detalles.operationalLayers){//CAPA
+      if(detalles.operationalLayers[i].popupInfo != undefined){
+        capas.push(detalles.operationalLayers[i].id);
+      }
+    }
+    for(var l in roles){
+      jsonFinal[roles[l]] = {};
+      for(var m in capas){
+        jsonFinal[roles[l]][capas[m]]={};
+        for(var k = 0; k<document.getElementById("selector_"+capas[m]).length; k++){//CAMPO
+          if(document.getElementById("selector_"+capas[m]).options[k].selected){
+            var identificador = roles[l]+";"+capas[m]+";"+document.getElementById("selector_"+capas[m]).options[k].value;
+            var elemento_check = document.getElementById(identificador);
+            if(elemento_check.checked){
+              jsonFinal[roles[l]][capas[m]][document.getElementById("selector_"+capas[m]).options[k].value] = {'editable': true};
+            }
+            else{
+              jsonFinal[roles[l]][capas[m]][document.getElementById("selector_"+capas[m]).options[k].value] = {'editable': false};
+            }
+            }
+          }
+        }
+      }
+      console.log(jsonFinal);
+  });*/
+//==//==//==//==//==//==//==//==//==//==//==//==
   $('#enviar').click(function(){
+    var arregloCapas = [];
+    var arrayGrupos = [];
     var verificacion = true;
     var json_capas = {};
+    var jsonFinal = {};
     json_capas["webmapid"] = detalles[0].webmapid;
     json_capas["clientid"] = detalles[0].clientid;
     json_capas["Grupos"] = [];
@@ -87,6 +126,7 @@ $.getJSON( "js/webmap.json").done(function(data){
       if(detalles.operationalLayers[i].popupInfo != undefined){
         var json_arrays = [];
         json_capas["operationalLayers"].push(detalles.operationalLayers[i]);
+        arregloCapas.push(detalles.operationalLayers[i]);
         var selector = document.getElementById("selector_"+detalles.operationalLayers[i].id);
         json_capas[String(detalles.operationalLayers[i].itemId)]= String(detalles.operationalLayers[i].id);
         json_capas[String(detalles.operationalLayers[i].id)] = String(detalles.operationalLayers[i].itemId);
@@ -121,6 +161,7 @@ $.getJSON( "js/webmap.json").done(function(data){
         var opt = selector.options[j];
         if (opt.selected) {
           json_capas["Grupos"].push(opt.text);
+          arrayGrupos.push(opt.text);
           if(json_capas["Grupos"].length > 0){
             var estados = $("#"+opt.text).val();
             if(estados == undefined || estados == ""){
@@ -151,6 +192,30 @@ $.getJSON( "js/webmap.json").done(function(data){
       alert("Se debe vincular grupos de usuarios a esta aplicacion");
       verificacion = false;
     }
+
+    for(var l in arrayGrupos){
+      var nombres = String(arrayGrupos[l]);
+      nombres = nombres.toLowerCase();
+      console.log(nombres);
+      jsonFinal[nombres] = {};
+      for(var m in arregloCapas){
+        jsonFinal[nombres][arregloCapas[m].id]={};
+        for(var k = 0; k<document.getElementById("selector_"+arregloCapas[m].id).length; k++){//CAMPO
+          if(document.getElementById("selector_"+arregloCapas[m].id).options[k].selected){
+            var identificador = arrayGrupos[l]+";"+arregloCapas[m].id+";"+document.getElementById("selector_"+arregloCapas[m].id).options[k].value;
+            var elemento_check = document.getElementById(identificador);
+            if(elemento_check.checked){
+              jsonFinal[nombres][arregloCapas[m].id][document.getElementById("selector_"+arregloCapas[m].id).options[k].value] = {'editable': true};
+            }
+            else{
+              jsonFinal[nombres][arregloCapas[m].id][document.getElementById("selector_"+arregloCapas[m].id).options[k].value] = {'editable': false};
+            }
+            }
+          }
+        }
+      }
+      json_capas['editables'] = jsonFinal;
+
     if(verificacion && json_capas["Grupos"].length > 0){
       var ajaxurl = './configuration.php',
       data =  {'action': JSON.stringify(json_capas)};
@@ -213,6 +278,68 @@ $.getJSON( "js/webmap.json").done(function(data){
       document.location = "./setup.php"
   }
 });
+function myFunction(datos,filtroGlobal){
+  console.log(datos, filtroGlobal);
+}
+
+function subfiltros(){
+
+}
+
+function crearfiltro(idBoton){
+  $.getJSON( "js/webmap.json").done(function(data){
+    var detalles = JSON.parse(data);
+    var datos = idBoton.split(';');
+    datos[0]//rol
+    datos[1]//Capa
+    datos[2]//url
+    if(datos[2].indexOf("http://") != -1){
+      datos[2] = datos[2].substring(7);
+    }
+    var data = null;
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        var dominios = JSON.parse(this.response);
+        filtroGlobal = JSON.parse(this.response);
+        var divPanel = document.getElementById(datos[0]+";"+datos[1]);
+        var select = document.createElement("SELECT");
+        select.setAttribute("class","form-control");
+        select.setAttribute("id","selector_"+datos[0]+";"+datos[1]);
+        select.setAttribute("onchange","myFunction(this.id, filtroGlobal)")
+        var option0 = document.createElement("OPTION")
+        var opcionTexto0 = document.createTextNode("Selecciona un campo.");
+        option0.appendChild(opcionTexto0);
+        select.appendChild(option0);
+        //console.log(dominios);
+        for(var i in dominios.fields){
+          var option = document.createElement("OPTION")
+          option.setAttribute("value",dominios.fields[i].name);
+          var opcionTexto = document.createTextNode(dominios.fields[i].name);
+          option.appendChild(opcionTexto);
+          select.appendChild(option);
+          if(dominios.fields[i].domain != null){
+            for(var j in dominios.fields[i].domain.codedValues){
+              dominios.fields[i].domain.name;//Nombre del Campo que contiene el dominio
+              //console.log(dominios.fields[i].domain.codedValues[j].name);
+            }
+          }
+          else{//Campos sin dominio
+
+          }
+        }
+        divPanel.appendChild(select);
+      }
+    });
+    var urlGrupos = "https://"+datos[2]+"?f=pjson&token="+detalles[0].token;
+    xhr.open("POST", urlGrupos);
+    xhr.send(data);
+
+  });
+}
+
 function seleccionGrupo() {
   $.getJSON( "js/webmap.json").done(function(data){
     var detalles = JSON.parse(data);
@@ -244,7 +371,7 @@ function seleccionGrupo() {
       var divText = document.createElement("DIV");
       divText.setAttribute("class","col-sm-12");
       //Aqui va el bucle de cada capa
-      /*
+
       var rol = valores[i];
       for(var z in detalles.operationalLayers){
       if(detalles.operationalLayers[z].popupInfo != undefined){
@@ -260,9 +387,10 @@ function seleccionGrupo() {
             var divGroupCheck = document.createElement("DIV");
             divGroupCheck.setAttribute("class","col-sm-offset-2 col-sm-10");
                     var divSubPanelCheckBox1 = document.createElement("DIV");
-                    divSubPanelCheckBox1.setAttribute("class","panel-body col-sm-6");
+                    divSubPanelCheckBox1.setAttribute("class","panel-body col-sm-4");
                     var divSubPanelCheckBox2 = document.createElement("DIV");
-                    divSubPanelCheckBox2.setAttribute("class","panel-body col-sm-6");
+                    divSubPanelCheckBox2.setAttribute("class","panel-body col-sm-8");
+                    divSubPanelCheckBox2.setAttribute("id",rol+";"+detalles.operationalLayers[z].id);
           for (var j=0, iLen=selector.length; j<iLen; j++){
             var opt = selector.options[j];
             if (opt.selected){
@@ -272,7 +400,7 @@ function seleccionGrupo() {
               var checkboxField = document.createElement("INPUT");
               checkboxField.setAttribute("type", "checkbox");
               checkboxField.setAttribute("value",opt.value);
-              checkboxField.setAttribute("id",detalles.operationalLayers[z].id+"_"+opt.value+"_"+rol);
+              checkboxField.setAttribute("id",rol+";"+detalles.operationalLayers[z].id+";"+opt.value);
               checkboxField.setAttribute("class","checkbox");
               labelCheckBox.innerHTML = opt.text;
               labelCheckBox.appendChild(checkboxField);
@@ -283,9 +411,10 @@ function seleccionGrupo() {
 
           var filterButton = document.createElement("BUTTON");
           filterButton.setAttribute("class","btn btn-info");
-          filterButton.setAttribute("id","boton_"+valores[i]);
+          filterButton.setAttribute("id",rol+";"+detalles.operationalLayers[z].id+";"+detalles.operationalLayers[z].url+";boton");
           filterButton.innerHTML =  "Filtros";
           filterButton.setAttribute("type","button");
+          filterButton.setAttribute("onclick","crearfiltro(this.id)");
           divSubPanelCheckBox2.appendChild(filterButton);
 
 
@@ -296,7 +425,7 @@ function seleccionGrupo() {
           divCampo.appendChild(labelPanelCheckBox);
           divCampo.appendChild(divPanelCheckBox);
         }
-      }*///Final de bucle de capas
+      }///Final de bucle de capas
       var textField = document.createElement("INPUT");
       textField.setAttribute("type", "text");
       textField.setAttribute("class","form-control");
