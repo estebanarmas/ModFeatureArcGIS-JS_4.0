@@ -18,13 +18,14 @@ require([
   "esri/tasks/QueryTask",
   "esri/symbols/PictureMarkerSymbol",
   "esri/symbols/SimpleLineSymbol",
+  "esri/symbols/SimpleFillSymbol",
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
   "esri/tasks/support/Query",
   "esri/views/MapView",
   "esri/WebMap",
   "dojo/promise/all",
-  "dojo/domReady!"],function(OAuthInfo, esriId, Portal, PortalQueryParams,PortalQueryResult, urlUtils, Collection, FeatureLayer, QueryTask, PictureMarkerSymbol, SimpleLineSymbol, GraphicsLayer, Graphic, Query, MapView, WebMap, all){
+  "dojo/domReady!"],function(OAuthInfo, esriId, Portal, PortalQueryParams,PortalQueryResult, urlUtils, Collection, FeatureLayer, QueryTask, PictureMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, GraphicsLayer, Graphic, Query, MapView, WebMap, all){
 
   var info = new OAuthInfo({
     appId: configuracionInicial.clientid,
@@ -109,9 +110,6 @@ require([
       showDetails = false;
     }
   });
-
-  $('#procede').click(function(){
-  });
 //==============================================================================//
 function modficarFeature(webmap, url, view, tokenUser, grupo){
   loadHTML("edicion", grupo);
@@ -175,7 +173,7 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
           }
         }
 //===============Creacion de formulario para edicion de feature================//
-  loadFormHTML(result,feature, imagenesURL, configuracionInicial[String(url.query.capa)]);
+  loadFormHTML(result,feature, imagenesURL, configuracionInicial[String(url.query.capa)],grupo);
 //==============================================================================//
       if(fl.geometryType != "point"){
         view.extent = result.features[0].geometry.extent;
@@ -204,15 +202,23 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
   };
 //==============================================================================//
   $('#subsanado').click(function () {
+    var capa = configuracionInicial[String(url.query.capa)];
+    for(var xx in configuracionInicial[capa][0]){
+      var campo = configuracionInicial[capa][0][xx].name;
+      if(configuracionInicial.editables[grupo][capa][campo].editable){
+        feature.attributes[campo] = document.getElementById(campo).value;
+      }
+    }
     if($("#fileinfoField").val() != ""){
       if(subir_Imagen()){
         feature.attributes.ESTADO = "SUBSANADO";
+
         var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
         var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
         var data = null;
         var xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", function () {
-          if (this.readyState === 4) {
+          if (this.readyState === 4) {//JSON.parse(this.response).error
             console.log(this.responseText);
             document.location = "./"
           }
@@ -242,6 +248,13 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
   });
 //==============================================================================//
   $('#procede').click(function () {
+    var capa = configuracionInicial[String(url.query.capa)];
+    for(var xx in configuracionInicial[capa][0]){
+      var campo = configuracionInicial[capa][0][xx].name;
+      if(configuracionInicial.editables[grupo][capa][campo].editable){
+        feature.attributes[campo] = document.getElementById(campo).value;
+      }
+    }
     if($("#fileinfoField").val() != ""){
       if(subir_Imagen()){
         feature.attributes.ESTADO = "PENDIENTE OIT";
@@ -279,9 +292,35 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
     }
   });
 //==============================================================================//
-$('#finalizado').click(function () {
-  if($("#fileinfoField").val() != ""){
-    if(subir_Imagen()){
+  $('#finalizado').click(function () {
+    var capa = configuracionInicial[String(url.query.capa)];
+    for(var xx in configuracionInicial[capa][0]){
+      var campo = configuracionInicial[capa][0][xx].name;
+      if(configuracionInicial.editables[grupo][capa][campo].editable){
+        feature.attributes[campo] = document.getElementById(campo).value;
+      }
+    }
+    if($("#fileinfoField").val() != ""){
+      if(subir_Imagen()){
+        feature.attributes.ESTADO = "FINALIZADO";
+        var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+        var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+        var data = null;
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === 4) {
+            console.log(this.responseText);
+            document.location = "./"
+          }
+        });
+        xhr.open("POST", urlTest+featureArray);
+        xhr.send(data);
+      }
+      else{
+        alert("No se ha podido subir la imagen");
+      }
+    }
+    else{
       feature.attributes.ESTADO = "FINALIZADO";
       var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
       var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
@@ -296,30 +335,37 @@ $('#finalizado').click(function () {
       xhr.open("POST", urlTest+featureArray);
       xhr.send(data);
     }
-    else{
-      alert("No se ha podido subir la imagen");
-    }
-  }
-  else{
-    feature.attributes.ESTADO = "FINALIZADO";
-    var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
-    var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
-    var data = null;
-    var xhr = new XMLHttpRequest();
-    xhr.addEventListener("readystatechange", function () {
-      if (this.readyState === 4) {
-        console.log(this.responseText);
-        document.location = "./"
-      }
-    });
-    xhr.open("POST", urlTest+featureArray);
-    xhr.send(data);
-  }
-});
+  });
 //==============================================================================//
-$('#no_procede').click(function () {
-  if($("#fileinfoField").val() != ""){
-    if(subir_Imagen()){
+  $('#no_procede').click(function () {
+    var capa = configuracionInicial[String(url.query.capa)];
+    for(var xx in configuracionInicial[capa][0]){
+      var campo = configuracionInicial[capa][0][xx].name;
+      if(configuracionInicial.editables[grupo][capa][campo].editable){
+        feature.attributes[campo] = document.getElementById(campo).value;
+      }
+    }
+    if($("#fileinfoField").val() != ""){
+      if(subir_Imagen()){
+        feature.attributes.ESTADO = "INICIADO";
+        var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
+        var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
+        var data = null;
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === 4) {
+            console.log(this.responseText);
+            document.location = "./"
+          }
+        });
+        xhr.open("POST", urlTest+featureArray);
+        xhr.send(data);
+      }
+      else{
+        alert("No se ha podido subir la imagen");
+      }
+    }
+    else{
       feature.attributes.ESTADO = "INICIADO";
       var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
       var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
@@ -334,26 +380,7 @@ $('#no_procede').click(function () {
       xhr.open("POST", urlTest+featureArray);
       xhr.send(data);
     }
-    else{
-      alert("No se ha podido subir la imagen");
-    }
-  }
-  else{
-    feature.attributes.ESTADO = "INICIADO";
-    var featureArray = "?f=pjson&features="+JSON.stringify(feature.toJSON())+"&token="+esriId.credentials[0].token;
-    var urlTest = visibleLayer.url+"/"+visibleLayer.layerId+"/updateFeatures";
-    var data = null;
-    var xhr = new XMLHttpRequest();
-    xhr.addEventListener("readystatechange", function () {
-      if (this.readyState === 4) {
-        console.log(this.responseText);
-        document.location = "./"
-      }
-    });
-    xhr.open("POST", urlTest+featureArray);
-    xhr.send(data);
-  }
-});
+  });
 //==============================================================================//
       }
      });
@@ -362,7 +389,8 @@ $('#no_procede').click(function () {
 
 //==============================================================================//
 //==============================================================================//
-function mostrarCapas(webmap, resultados, view){
+function mostrarCapas(webmap, resultados, view, goto){
+
   if(resultados.geometryType == "point"){
     var featureVisible = [];
     var simboloPoint = new PictureMarkerSymbol({"url":"http://static.arcgis.com/images/Symbols/Shapes/RedPin1LargeB.png", "contentType":"image/png","width":34,"height":34 });
@@ -375,7 +403,10 @@ function mostrarCapas(webmap, resultados, view){
     var capaVisible = new GraphicsLayer({
       graphics: featureVisible
     });
-    view.goTo(featureVisible);
+    if(!goto){
+      view.goTo(featureVisible);
+      goto = true
+    }
     webmap.add(capaVisible);
   }
   if(resultados.geometryType == "polyline"){
@@ -393,7 +424,10 @@ function mostrarCapas(webmap, resultados, view){
     var capaVisible = new GraphicsLayer({
       graphics: featureVisible
     });
-    view.goTo(featureVisible);
+    if(!goto){
+      view.goTo(featureVisible);
+      goto = true
+    }
     webmap.add(capaVisible);
   }
   if(resultados.geometryType == "polygon"){
@@ -414,9 +448,13 @@ function mostrarCapas(webmap, resultados, view){
     var capaVisible = new GraphicsLayer({
       graphics: featureVisible
     });
-    view.goTo(featureVisible);
+    if(!goto){
+      view.goTo(featureVisible);
+      goto = true
+    }
     webmap.add(capaVisible);
   }
+  return goto;
 }
 function generarConsulta(capaId, grupo){
   var consultaCapa = "";
@@ -508,10 +546,11 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
   var promesas = new all(tareas);
   promesas.then(function(resultados){
     if(resultados.length > 0){
+      var goto = false;
       for(var j in resultados){
         if(resultados[j].features.length > 0){
           generarTablas(resultados[j],urls[j].id, urls[j].itemId);//, j
-          mostrarCapas(webmap,resultados[j],view);
+          goto = mostrarCapas(webmap,resultados[j],view, goto);
         }
       }
     }
@@ -567,7 +606,7 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
       }
   	}
   }
-  function loadFormHTML(result,feature, imagenesURL, capa){
+  function loadFormHTML(result,feature, imagenesURL, capa, grupo){
     var divRow = document.createElement("DIV");
     divRow.setAttribute("class", "row");
     var divCol = document.createElement("DIV");
@@ -597,7 +636,12 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
       else{
         textField.setAttribute("value",feature.attributes[configuracionInicial[capa][0][i].name]);
       }
-      textField.disabled = true;
+      if(configuracionInicial.editables[grupo][capa][configuracionInicial[capa][0][i].name].editable){
+        textField.disabled = false;
+      }
+      else{
+        textField.disabled = true;
+      }
       divText.appendChild(textField);
       divCampo.appendChild(labelCampo);
       divCampo.appendChild(divText);
