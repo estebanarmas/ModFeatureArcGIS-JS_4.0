@@ -393,6 +393,7 @@ function mostrarCapas(webmap, resultados, view){
     var capaVisible = new GraphicsLayer({
       graphics: featureVisible
     });
+    view.goTo(featureVisible);
     webmap.add(capaVisible);
   }
   if(resultados.geometryType == "polygon"){
@@ -413,6 +414,7 @@ function mostrarCapas(webmap, resultados, view){
     var capaVisible = new GraphicsLayer({
       graphics: featureVisible
     });
+    view.goTo(featureVisible);
     webmap.add(capaVisible);
   }
 }
