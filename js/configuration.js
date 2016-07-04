@@ -163,7 +163,7 @@ $.getJSON( "js/webmap.json").done(function(data){
           json_capas["Grupos"].push(opt.text);
           arrayGrupos.push(opt.text);
           if(json_capas["Grupos"].length > 0){
-            var estados = $("#"+opt.text).val();
+            var estados = $("#"+opt.value).val();
             if(estados == undefined || estados == ""){
               alert("Debe seleccionar al menos un grupo y agregar un estado para vincularlo al webmap");
               verificacion = false;
@@ -247,7 +247,7 @@ $.getJSON( "js/webmap.json").done(function(data){
         selectMultiple.setAttribute("onchange","seleccionGrupo()");
         for(var j in respuesta.results){
           var opcion = document.createElement("option");
-          opcion.setAttribute("value", respuesta.results[j].title);
+          opcion.setAttribute("value", respuesta.results[j].id);//tittle
           var opcionTexto = document.createTextNode(respuesta.results[j].title);
           opcion.appendChild(opcionTexto);
           selectMultiple.appendChild(opcion);
@@ -263,7 +263,7 @@ $.getJSON( "js/webmap.json").done(function(data){
         selectMultiple.setAttribute("onchange","seleccionGrupo()");
         for(var j in respuesta.results){
           var opcion = document.createElement("option");
-          opcion.setAttribute("value", respuesta.results[j].title);
+          opcion.setAttribute("value", respuesta.results[j].id);//tittle
           var opcionTexto = document.createTextNode(respuesta.results[j].title);
           opcion.appendChild(opcionTexto);
           selectMultiple.appendChild(opcion);
@@ -348,7 +348,7 @@ function seleccionGrupo() {
   for (var j=0, iLen=selector.length; j<iLen; j++){
       var opt = selector.options[j];
       if (opt.selected) {
-        valores.push(opt.text);
+        valores.push({'text':opt.text, 'id':opt.value});//text
     }
   }
   console.log(valores);
@@ -366,13 +366,13 @@ function seleccionGrupo() {
         //divCampo.setAttribute("id",valores[i]);
       var labelCampo = document.createElement("LABEL");
         labelCampo.setAttribute("class", "control-label col-sm-12");
-        labelCampo.innerHTML = valores[i];//result.fields[i].alias
+        labelCampo.innerHTML = valores[i].text;//result.fields[i].alias
         labelCampo.setAttribute("onclick","showHide()");
       var divText = document.createElement("DIV");
       divText.setAttribute("class","col-sm-12");
       //Aqui va el bucle de cada capa
 
-      var rol = valores[i];
+      var rol = valores[i].text;
       for(var z in detalles.operationalLayers){
       if(detalles.operationalLayers[z].popupInfo != undefined){
           var divPanelCheckBox = document.createElement("DIV");
@@ -429,7 +429,7 @@ function seleccionGrupo() {
       var textField = document.createElement("INPUT");
       textField.setAttribute("type", "text");
       textField.setAttribute("class","form-control");
-      textField.setAttribute("id",valores[i]);//result.fields
+      textField.setAttribute("id",valores[i].id);//result.fields
       textField.setAttribute("placeholder","Ej: Estado 1,Estado 2...etc - Separar cada estado por una coma sin espacio");
       divText.appendChild(textField);//textField
       divCampo.appendChild(divText);
