@@ -24,8 +24,10 @@ require([
   "esri/tasks/support/Query",
   "esri/views/MapView",
   "esri/WebMap",
+  "esri/PopupTemplate",
+  "js/paging.js",
   "dojo/promise/all",
-  "dojo/domReady!"],function(OAuthInfo, esriId, Portal, PortalQueryParams,PortalQueryResult, urlUtils, Collection, FeatureLayer, QueryTask, PictureMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, GraphicsLayer, Graphic, Query, MapView, WebMap, all){
+  "dojo/domReady!"],function(OAuthInfo, esriId, Portal, PortalQueryParams,PortalQueryResult, urlUtils, Collection, FeatureLayer, QueryTask, PictureMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, GraphicsLayer, Graphic, Query, MapView, WebMap, PopupTemplate, paging, all){
 
   var info = new OAuthInfo({
     appId: configuracionInicial.clientid,
@@ -389,15 +391,23 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
 
 //==============================================================================//
 //==============================================================================//
-function mostrarCapas(webmap, resultados, view, goto){
-
+function mostrarCapas(webmap, resultados, view, goto, capa, idCapa){
   if(resultados.geometryType == "point"){
     var featureVisible = [];
     var simboloPoint = new PictureMarkerSymbol({"url":"http://static.arcgis.com/images/Symbols/Shapes/RedPin1LargeB.png", "contentType":"image/png","width":34,"height":34 });
     for(var o in resultados.features){
+      var popUP = new PopupTemplate();
+      popUP.title = capa;
+      popUP.content = '<table class="table"><tbody>'
+      for(var w in configuracionInicial[capa][0]){
+        popUP.content += '<tr class="info"><td><b>'+configuracionInicial[capa][0][w].name+"</b></td>"+'<td>'+resultados.features[o].attributes[configuracionInicial[capa][0][w].name]+"</td></tr>";
+      }
+      popUP.content += '<tr class="danger"><td><a href=./index.html?id='+resultados.features[o].attributes["OBJECTID"]+'&capa='+idCapa+'><b>EDITAR FEATURE</b>'+'</td></tr>';
+      popUP.content += '</tbody></table>'
       featureVisible.push(new Graphic({
         geometry: resultados.features[o].geometry,
-        symbol: simboloPoint
+        symbol: simboloPoint,
+        popupTemplate: popUP
       }));
     }
     var capaVisible = new GraphicsLayer({
@@ -416,9 +426,18 @@ function mostrarCapas(webmap, resultados, view, goto){
         width: 4
       });
     for(var o in resultados.features){
+      var popUP = new PopupTemplate();
+      popUP.title = capa;
+      popUP.content = '<table class="table"><tbody>'
+      for(var w in configuracionInicial[capa][0]){
+        popUP.content += '<tr class="info"><td><b>'+configuracionInicial[capa][0][w].name+"</b></td>"+'<td>'+resultados.features[o].attributes[configuracionInicial[capa][0][w].name]+"</td></tr>";
+      }
+      popUP.content += '<tr class="danger"><td><a href=./index.html?id='+resultados.features[o].attributes["OBJECTID"]+'&capa='+idCapa+'><b>EDITAR FEATURE</b>'+'</td></tr>';
+      popUP.content += '</tbody></table>'
       featureVisible.push(new Graphic({
         geometry: resultados.features[o].geometry,
-        symbol: simboloLine
+        symbol: simboloLine,
+        popupTemplate: popUP
       }));
     }
     var capaVisible = new GraphicsLayer({
@@ -440,9 +459,18 @@ function mostrarCapas(webmap, resultados, view, goto){
         }
       });
     for(var o in resultados.features){
+      var popUP = new PopupTemplate();
+      popUP.title = capa;
+      popUP.content = '<table class="table"><tbody>'
+      for(var w in configuracionInicial[capa][0]){
+        popUP.content += '<tr class="info"><td><b>'+configuracionInicial[capa][0][w].name+"</b></td>"+'<td>'+resultados.features[o].attributes[configuracionInicial[capa][0][w].name]+"</td></tr>";
+      }
+      popUP.content += '<tr class="danger"><td><a href=./index.html?id='+resultados.features[o].attributes["OBJECTID"]+'&capa='+idCapa+'><b>EDITAR FEATURE</b>'+'</td></tr>';
+      popUP.content += '</tbody></table>'
       featureVisible.push(new Graphic({
         geometry: resultados.features[o].geometry,
-        symbol: simboloPolygon
+        symbol: simboloPolygon,
+        popupTemplate: popUP
       }));
     }
     var capaVisible = new GraphicsLayer({
@@ -461,6 +489,7 @@ function generarConsulta(capaId, grupo){
   var query = new Query();
   query.outFields = ["*"];
   query.returnGeometry = true;
+  query.num = 100;//Numero que limita la cantidad de features que se obtienen, en el caso de que la consulta devolviese una cantidad muy alta de features, esto mejora la velocidad de respuesta de la aplicacion.
   query.outSpatialReference = { wkid: 102100 };
   for(var j in configuracionInicial[capaId][0]){
     var campo = String(configuracionInicial[capaId][0][j].name);
@@ -477,6 +506,19 @@ function generarConsulta(capaId, grupo){
 function generarTablas(features, grupoFeat, item){
   var divRow = document.createElement("DIV");
   divRow.setAttribute("class", "row");
+  var divPanel = document.createElement("DIV");
+  divPanel.setAttribute("class","panel panel-primary");
+  var divPanelHeading = document.createElement("DIV");
+  divPanelHeading.setAttribute("class","panel-heading");
+  divPanelHeading.innerHTML = grupoFeat;
+  divPanelHeading.setAttribute("onclick","hideShowPanels(this.innerHTML)");
+  var divPanelBody = document.createElement("DIV");
+  divPanelBody.setAttribute("class","panel-body");
+  divPanelBody.setAttribute("id",grupoFeat);
+  /*<div class="panel panel-primary">
+      <div class="panel-heading">Panel with panel-primary class</div>
+      <div class="panel-body">Panel Content</div>
+    </div>*/
     var divCol = document.createElement("DIV");
     divCol.setAttribute("class", "col-sm-12");
       var divTabla = document.createElement("DIV");
@@ -484,6 +526,7 @@ function generarTablas(features, grupoFeat, item){
       divTabla.setAttribute("id", "informacion_feature_"+grupoFeat);
         var tabla   = document.createElement("table");
         tabla.setAttribute('class','table');
+        tabla.setAttribute('id','tabla_'+grupoFeat);
           var cabecera = document.createElement("thead");
             var filaCabecera = document.createElement("tr");
               for(var l in configuracionInicial[grupoFeat][0]){
@@ -519,7 +562,10 @@ function generarTablas(features, grupoFeat, item){
           divTabla.appendChild(tabla);
         divCol.appendChild(divTabla);
       divRow.appendChild(divCol);
-    document.getElementById("dashboard_panel").appendChild(divRow);
+      divPanelBody.appendChild(divRow);
+      divPanel.appendChild(divPanelHeading);
+      divPanel.appendChild(divPanelBody);
+    document.getElementById("dashboard_panel").appendChild(divPanel);
 }
 //==============================================================================//
 //==============================================================================//
@@ -550,7 +596,8 @@ function dashboardFeatures(webmap, view, tokenUser, grupo){
       for(var j in resultados){
         if(resultados[j].features.length > 0){
           generarTablas(resultados[j],urls[j].id, urls[j].itemId);//, j
-          goto = mostrarCapas(webmap,resultados[j],view, goto);
+          goto = mostrarCapas(webmap,resultados[j],view, goto, urls[j].id, urls[j].itemId);
+          $('#tabla_'+urls[j].id).paging({limit:20});
         }
       }
     }
