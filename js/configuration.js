@@ -415,7 +415,7 @@ function seleccionGrupo() {
           filterButton.innerHTML =  "Filtros";
           filterButton.setAttribute("type","button");
           filterButton.setAttribute("onclick","crearfiltro(this.id)");
-          divSubPanelCheckBox2.appendChild(filterButton);
+          //divSubPanelCheckBox2.appendChild(filterButton);
 
 
           divPanelCheckBox.appendChild(divSubPanelCheckBox1);
