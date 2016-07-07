@@ -61,11 +61,15 @@
     		preview.src = "";
     	}
     }
+
+    function showFeatureLayer(datos){
+      console.log(webmap);
+    }
     </script>
     <style>
     #viewDiv{
       width: 100%;
-      height: 400px;
+      height: 600px;
     }
     </style>
   </head>
@@ -96,6 +100,14 @@
     		<div id = "formulario">
         </div>
         <div id="dashboard_panel">
+          <ul id="tab_heads" class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#tab_mapa">Mapa</a></li>
+          </ul>
+        </br>
+          <div id="tab_contents" class="tab-content">
+            <div id="tab_mapa" class="tab-pane fade in active">
+            </div>
+          </div>
         </div>
         <div id="mapa">
           <label for="comment">Ubicacion de la Insidencia:</label>

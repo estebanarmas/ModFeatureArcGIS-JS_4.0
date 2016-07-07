@@ -186,7 +186,7 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
         view.goTo(feature.geometry);//result.features[0].geometry);
       }
 //==============================================================================//
-  function subir_Imagen () {
+function subir_Imagen () {
   var output = document.getElementById("output");
   var data = new FormData(document.getElementById("fileinfo"));
   data.append("f", "pjson");
@@ -201,7 +201,7 @@ function modficarFeature(webmap, url, view, tokenUser, grupo){
     output.innerHTML += "Error " + xhr.status + " occurred uploading your file.<br />";
     return false;
   }
-  };
+};
 //==============================================================================//
   $('#subsanado').click(function () {
     var capa = configuracionInicial[String(url.query.capa)];
@@ -508,6 +508,18 @@ function generarTablas(features, grupoFeat, item){
   divRow.setAttribute("class", "row");
   var divPanel = document.createElement("DIV");
   divPanel.setAttribute("class","panel panel-primary");
+  /*<li><a data-toggle="tab" href="#menu1">Menu 1</a></li>*/
+  var divTabPanelContent = document.createElement("DIV");
+  divTabPanelContent.setAttribute("class","tab-pane fade");
+  divTabPanelContent.setAttribute("id","tab_"+grupoFeat);
+  var tabHead = document.createElement("LI");
+  var tabHeadRef = document.createElement("a");
+  tabHeadRef.setAttribute("data-toggle","tab");
+  tabHeadRef.setAttribute("href","#tab_"+grupoFeat);
+  tabHeadRef.innerHTML = grupoFeat;
+  tabHeadRef.setAttribute("onclick","showFeatureLayer(this.innerHTML)");
+  tabHead.appendChild(tabHeadRef);
+  document.getElementById("tab_heads").appendChild(tabHead);
   var divPanelHeading = document.createElement("DIV");
   divPanelHeading.setAttribute("class","panel-heading");
   divPanelHeading.innerHTML = grupoFeat;
@@ -565,7 +577,9 @@ function generarTablas(features, grupoFeat, item){
       divPanelBody.appendChild(divRow);
       divPanel.appendChild(divPanelHeading);
       divPanel.appendChild(divPanelBody);
-    document.getElementById("dashboard_panel").appendChild(divPanel);
+    divTabPanelContent.appendChild(divPanel);
+    document.getElementById("tab_contents").appendChild(divTabPanelContent);
+    //document.getElementById("dashboard_panel").appendChild(divPanel);
 }
 //==============================================================================//
 //==============================================================================//

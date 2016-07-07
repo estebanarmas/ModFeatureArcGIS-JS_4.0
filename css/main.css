@@ -120,3 +120,8 @@ html, body {
   background: #187ed5;
   font-weight: bold;
 }
+
+
+#dashboard_panel{
+  display: none;
+}
