@@ -139,7 +139,7 @@
     }
 		if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			if (empty($_POST["name"]) || empty($_POST["password"]) || empty($_POST["webmap"]) || empty($_POST["clientid"])) {
-				echo "Ingrese todos los parametros por favor";
+				echo "Ingrese todos los parámetros por favor";
 			}
 			else{
 				get_data($_POST["name"],$_POST["password"], $_POST["webmap"], $_POST["clientid"]);
