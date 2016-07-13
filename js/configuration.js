@@ -10,7 +10,7 @@ $.getJSON( "js/webmap.json").done(function(data){
       divRow.setAttribute("class", "row");
       var labelCampo = document.createElement("LABEL");
       labelCampo.setAttribute("class", "control-label col-sm-8");
-      labelCampo.innerHTML = "Capa: "+detalles.name;
+      labelCampo.innerHTML = "Capa: "+detalles.title;
       var selectMultiple = document.createElement("SELECT");
       selectMultiple.multiple = "multiple";
       selectMultiple.size = detalles.fields.length-1;
@@ -402,8 +402,10 @@ function seleccionGrupo() {
               checkboxField.setAttribute("value",opt.value);
               checkboxField.setAttribute("id",rol+";"+detalles.operationalLayers[z].id+";"+opt.value);
               checkboxField.setAttribute("class","checkbox");
-              labelCheckBox.innerHTML = opt.text;
+              checkboxField.style.marginTop = "4px";
+              var span = document.createTextNode(opt.text);
               labelCheckBox.appendChild(checkboxField);
+              labelCheckBox.appendChild(span);
               divCheckBox.appendChild(labelCheckBox);
               divSubPanelCheckBox1.appendChild(divCheckBox);//divPanelCheckBox
             }
