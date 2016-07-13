@@ -379,7 +379,7 @@ function seleccionGrupo() {
           divPanelCheckBox.setAttribute("class","panel-body col-sm-12");
           var labelPanelCheckBox = document.createElement("LABEL");
           labelPanelCheckBox.setAttribute("class", "control-label col-sm-12");
-          labelPanelCheckBox.innerHTML = detalles.operationalLayers[z].id;
+          labelPanelCheckBox.innerHTML = detalles.operationalLayers[z].title;
           //divPanelCheckBox.appendChild(labelPanelCheckBox);
           var selector = document.getElementById("selector_"+detalles.operationalLayers[z].id);
           var groupCheckBox = document.createElement("DIV");
